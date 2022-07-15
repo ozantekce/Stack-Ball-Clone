@@ -8,7 +8,9 @@ public class Player : MonoBehaviour
 
     private Rigidbody rigidbody;
 
-    private bool smash;
+    private float currentTime;
+
+    private bool smash, invincible;
 
 
     void Awake()
@@ -27,6 +29,32 @@ public class Player : MonoBehaviour
         smash = Input.GetMouseButtonUp(0) ? false : smash;
 
 
+        if (invincible)
+        {
+            currentTime -= Time.deltaTime *0.35f;
+        }
+        else
+        {
+            if (smash)
+                currentTime += Time.deltaTime * 0.8f;
+            else
+                currentTime -= Time.deltaTime * 0.5f;
+        }
+
+        // UI check
+
+        if(currentTime >= 1)
+        {
+            currentTime = 1;
+            invincible = true;
+        }
+        else if(currentTime <= 0)
+        {
+            currentTime = 0;
+            invincible = false;
+        }
+
+        Debug.Log(invincible);
 
     }
 
@@ -53,19 +81,31 @@ public class Player : MonoBehaviour
         if (!smash)
         {
             rigidbody.velocity = new Vector3(0, 50 * Time.deltaTime * 5, 0);
-
         }
         else
         {
-            if (collision.gameObject.CompareTag("enemy"))
+            if (invincible)
             {
-                Destroy(collision.transform.parent.gameObject);
+                if (collision.gameObject.CompareTag("enemy") || collision.gameObject.CompareTag("plane"))
+                {
+                    collision.transform.parent.GetComponent<StackController>().ShatterAllParts();
+                }
+
+            }
+            else
+            {
+                if (collision.gameObject.CompareTag("enemy"))
+                {
+                    collision.transform.parent.GetComponent<StackController>().ShatterAllParts();
+                }
+
+                if (collision.gameObject.CompareTag("plane"))
+                {
+                    Debug.Log("Game Over!!!");
+                }
             }
 
-            if (collision.gameObject.CompareTag("plane"))
-            {
-                Debug.Log("Game Over!!!");
-            }
+
 
         }
 
