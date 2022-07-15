@@ -55,6 +55,19 @@ public class Player : MonoBehaviour
             rigidbody.velocity = new Vector3(0, 50 * Time.deltaTime * 5, 0);
 
         }
+        else
+        {
+            if (collision.gameObject.CompareTag("enemy"))
+            {
+                Destroy(collision.transform.parent.gameObject);
+            }
+
+            if (collision.gameObject.CompareTag("plane"))
+            {
+                Debug.Log("Game Over!!!");
+            }
+
+        }
 
 
     }
