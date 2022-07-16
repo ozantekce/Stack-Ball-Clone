@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class ScoreManager : MonoBehaviour
 
     private int score;
 
+    private Text scoreText;
 
     void Awake()
     {
@@ -30,11 +32,21 @@ public class ScoreManager : MonoBehaviour
 
     private void Start()
     {
+        scoreText = GameObject.Find("ScoreText").GetComponent<Text>();
         AddScore(0);
     }
 
 
+    private void Update()
+    {
+        if(scoreText == null)
+        {
+            scoreText = GameObject.Find("ScoreText").GetComponent<Text>();
+            scoreText.text = score.ToString();
+        }
 
+
+    }
 
     public void AddScore(int amount)
     {
@@ -43,8 +55,7 @@ public class ScoreManager : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", score);
         }
 
-        Debug.Log(score);
-        //LoadTheText
+        scoreText.text = score.ToString();
     }
 
     public void ResetScore()

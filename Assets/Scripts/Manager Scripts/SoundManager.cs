@@ -31,6 +31,10 @@ public class SoundManager : MonoBehaviour
     private bool sound = true;
 
 
+    public void SoundOnOff()
+    {
+        sound = !sound;
+    }
 
     public void PlaySoundFX(AudioClip clip,float volume)
     {

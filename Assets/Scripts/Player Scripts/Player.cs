@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
 
@@ -11,6 +11,14 @@ public class Player : MonoBehaviour
     private float currentTime;
 
     private bool smash, invincible;
+
+    private int currentBrokenStacks, totalStacks;
+
+    public GameObject invincibleGO;
+    public Image invincibleFill;
+    public GameObject fireEffect;
+
+
     public enum PlayerState
     {
         Prepare,
@@ -29,9 +37,15 @@ public class Player : MonoBehaviour
     {
 
         rigidbody = GetComponent<Rigidbody>();
-
+        currentBrokenStacks = 0;
     }
 
+
+    private void Start()
+    {
+        totalStacks = FindObjectsOfType<StackController>().Length;
+
+    }
 
     void Update()
     {
@@ -47,40 +61,61 @@ public class Player : MonoBehaviour
             if (invincible)
             {
                 currentTime -= Time.deltaTime * 0.35f;
+                if (!fireEffect.activeInHierarchy)
+                {
+                    fireEffect.SetActive(true);
+                }
+
             }
             else
             {
+                if (fireEffect.activeInHierarchy)
+                {
+                    fireEffect.SetActive(false);
+                }
+
                 if (smash)
                     currentTime += Time.deltaTime * 0.8f;
                 else
                     currentTime -= Time.deltaTime * 0.5f;
             }
 
-            // UI check
+            if(currentTime >= 0.15f || invincibleFill.color == Color.red)
+            {
+                invincibleGO.SetActive(true);
+            }
+            else
+            {
+                invincibleGO.SetActive(false);
+            }
 
             if (currentTime >= 1)
             {
                 currentTime = 1;
                 invincible = true;
+                invincibleFill.color = Color.red;
             }
             else if (currentTime <= 0)
             {
                 currentTime = 0;
                 invincible = false;
+                invincibleFill.color = Color.white;
             }
+
+
+            if (invincibleGO.activeInHierarchy)
+            {
+                invincibleFill.fillAmount = currentTime / 1.0f;
+            }
+
 
             //Debug.Log(invincible);
 
         }
 
 
-        if(playerState == PlayerState.Prepare)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                playerState = PlayerState.Playing;
-            }
-        }
+
+
         if (playerState == PlayerState.Finish)
         {
             if (Input.GetMouseButtonDown(0))
@@ -117,6 +152,7 @@ public class Player : MonoBehaviour
 
     public void IncreaseBrokenStacks()
     {
+        currentBrokenStacks++;
         if (!invincible)
         {
             ScoreManager.Instance.AddScore(1);
@@ -165,6 +201,7 @@ public class Player : MonoBehaviour
 
         }
 
+        FindObjectOfType<GameUI>().LevelSliderFill(currentBrokenStacks/(float)totalStacks);
 
         if(collision.gameObject.CompareTag("Finish") && playerState == PlayerState.Playing)
         {
