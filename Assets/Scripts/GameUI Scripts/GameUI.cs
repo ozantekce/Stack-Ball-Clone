@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class GameUI : MonoBehaviour
 {
 
-    public GameObject homeUI, inGameUI;
+    public GameObject homeUI, inGameUI,gameOverUI,finishUI;
     public GameObject allButtons;
 
     private bool buttons;
@@ -61,9 +61,17 @@ public class GameUI : MonoBehaviour
             }
         }
 
-        print(raycastResultList.Count);
+        //print(raycastResultList.Count);
 
         return raycastResultList.Count > 0;
+    }
+
+    public Text currentLevelText,nextLevelText;
+
+    private void Start()
+    {
+        currentLevelText.text = PlayerPrefs.GetInt("Level", 1).ToString();
+        nextLevelText.text = (PlayerPrefs.GetInt("Level", 1) + 1).ToString();
     }
 
     void Update()
@@ -75,7 +83,40 @@ public class GameUI : MonoBehaviour
                 soundButton.GetComponent<Image>().sprite = soundOnSprite;
             else if(!SoundManager.Instance.Sound && soundButton.GetComponent<Image>().sprite != soundOffSprite)
                 soundButton.GetComponent<Image>().sprite = soundOffSprite;
+
         }
+
+        if(player.playerState == Player.PlayerState.Died)
+        {
+            if (!gameOverUI.activeInHierarchy)
+            {
+                gameOverUI.SetActive(true);
+
+                gameOverUI.transform.GetChild(2).GetComponent<Text>().text = ScoreManager.Instance.Score.ToString();
+                gameOverUI.transform.GetChild(4).GetComponent<Text>().text = ScoreManager.Instance.BestScore.ToString();
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                ScoreManager.Instance.ResetScore();
+                FindObjectOfType<LevelSpawner>().ReloadLevel();
+            
+            }
+            
+
+        }
+
+        if(player.playerState == Player.PlayerState.Finish)
+        {
+            if (!finishUI.activeInHierarchy)
+            {
+                finishUI.SetActive(true);
+                finishUI.transform.GetChild(0).GetComponent<Text>().text = "Level " + PlayerPrefs.GetInt("Level", 1);
+            }
+
+
+        }
+
 
         if (Input.GetMouseButtonDown(0) && !IgnoreUI() && player.playerState == Player.PlayerState.Prepare)
         {

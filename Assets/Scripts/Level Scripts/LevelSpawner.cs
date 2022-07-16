@@ -126,5 +126,11 @@ public class LevelSpawner : MonoBehaviour
         
     }
 
+    public void ReloadLevel()
+    {
+        PlayerPrefs.SetInt("Level", level);
+        SceneManager.LoadScene(0);
+    }
+
 
 }

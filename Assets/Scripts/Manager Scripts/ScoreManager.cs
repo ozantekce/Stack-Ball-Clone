@@ -61,11 +61,13 @@ public class ScoreManager : MonoBehaviour
     public void ResetScore()
     {
         score = 0;
+        AddScore(0);
     }
 
     #region GetterSetter
     public static ScoreManager Instance { get => instance; set => instance = value; }
     public int Score { get => score; set => score = value; }
+    public int BestScore { get => PlayerPrefs.GetInt("HighScore",0);}
     #endregion
 
 
