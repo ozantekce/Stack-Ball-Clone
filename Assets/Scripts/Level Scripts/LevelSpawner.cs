@@ -19,7 +19,8 @@ public class LevelSpawner : MonoBehaviour
     private int level = 1, addOn =7;
     float i = 0;
 
-
+    public Material plateMat, baseMat;
+    public MeshRenderer playerMesh;
 
 
     void Start()
@@ -68,11 +69,18 @@ public class LevelSpawner : MonoBehaviour
         temp2 = Instantiate(winPrefab);
         temp2.transform.position = new Vector3(0, i - 0.01f, 0);
 
-
+        RandomColors();
 
 
     }
 
+
+    public void RandomColors()
+    {
+        plateMat.color = Random.ColorHSV(0, 1, 0.5f, 1, 1, 1);
+        baseMat.color = plateMat.color + Color.gray;
+        playerMesh.material.color = plateMat.color;
+    }
 
     void ModelSelection()
     {
